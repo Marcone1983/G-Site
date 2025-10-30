@@ -1,0 +1,13 @@
+{
+  "name": "g-site-frontend",
+  "version": "1.0.0",
+  "description": "Frontend dependencies for G-Site",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Frontend build step skipped as files are already present' && exit 0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
