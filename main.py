@@ -8,7 +8,12 @@ from user import db
 from user import user_bp
 from real_traffic import real_traffic_bp
 
-app = Flask(__name__, static_folder='build', static_url_path='/', template_folder=os.path.dirname(__file__))
+# Configurazione Flask per servire i file statici dalla cartella 'build'
+# e l'index.html dalla root del progetto.
+# La cartella 'build' contiene gli asset statici (JS, CSS, ecc.)
+# La cartella 'static' è impostata su 'build'
+# La cartella 'template' è impostata sulla root del progetto dove si trova index.html
+app = Flask(__name__, static_folder='build', template_folder=os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
 # Abilita CORS per tutte le route
@@ -27,17 +32,26 @@ app.register_blueprint(real_traffic_bp, url_prefix='/api/traffic')
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path == "":
-        return send_from_directory(app.template_folder, 'index.html')
-    static_folder_path = app.static_folder
-    if static_folder_path is None:
-            return "Static folder not configured", 404
-
-    # Se il percorso corrisponde a un file statico esistente, servilo
-    if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
-        return send_from_directory(static_folder_path, path)
+    # Se il percorso è per un file statico all'interno di 'build' (es. /build/index.js)
+    # Flask lo serve automaticamente grazie a static_folder='build'.
     
-    # Altrimenti, per tutte le altre rotte (SPA routing), servi sempre index.html
+    # Se il percorso è per un file statico nella root (es. /index.html, /app.css)
+    # o per il routing della SPA, serviamo index.html
+    
+    # Tentativo di servire il file statico dalla cartella 'build'
+    if path != "":
+        # Controlla se il file esiste nella cartella 'build'
+        static_file_path = os.path.join(app.static_folder, path)
+        if os.path.exists(static_file_path):
+            return send_from_directory(app.static_folder, path)
+        
+        # Controlla se il file esiste nella root (es. app.css, index.js)
+        # Questo è necessario perché il frontend potrebbe fare riferimento a file nella root
+        root_file_path = os.path.join(app.template_folder, path)
+        if os.path.exists(root_file_path):
+            return send_from_directory(app.template_folder, path)
+
+    # Per tutte le altre rotte (inclusa la root '/') e per i percorsi SPA, servi index.html
     return send_from_directory(app.template_folder, 'index.html')
 
 
