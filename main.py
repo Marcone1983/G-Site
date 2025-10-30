@@ -6,7 +6,7 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from user import db
 from user import user_bp
-from real_traffic_api import real_traffic_bp
+from real_traffic import real_traffic_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
