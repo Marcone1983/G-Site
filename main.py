@@ -8,7 +8,7 @@ from user import db
 from user import user_bp
 from real_traffic import real_traffic_bp
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app = Flask(__name__, static_folder=os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
 # Abilita CORS per tutte le route
@@ -31,14 +31,12 @@ def serve(path):
     if static_folder_path is None:
             return "Static folder not configured", 404
 
+    # Se il percorso corrisponde a un file statico esistente, servilo
     if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
         return send_from_directory(static_folder_path, path)
-    else:
-        index_path = os.path.join(static_folder_path, 'index.html')
-        if os.path.exists(index_path):
-            return send_from_directory(static_folder_path, 'index.html')
-        else:
-            return "index.html not found", 404
+    
+    # Altrimenti, per tutte le altre rotte (SPA routing), servi sempre index.html
+    return send_from_directory(static_folder_path, 'index.html')
 
 
 # if __name__ == '__main__':
