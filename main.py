@@ -8,7 +8,7 @@ from user import db
 from user import user_bp
 from real_traffic import real_traffic_bp
 
-app = Flask(__name__, static_folder=os.path.dirname(__file__))
+app = Flask(__name__, static_folder='build', static_url_path='/', template_folder=os.path.dirname(__file__))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
 
 # Abilita CORS per tutte le route
@@ -27,6 +27,8 @@ app.register_blueprint(real_traffic_bp, url_prefix='/api/traffic')
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
+    if path == "":
+        return send_from_directory(app.template_folder, 'index.html')
     static_folder_path = app.static_folder
     if static_folder_path is None:
             return "Static folder not configured", 404
@@ -36,7 +38,7 @@ def serve(path):
         return send_from_directory(static_folder_path, path)
     
     # Altrimenti, per tutte le altre rotte (SPA routing), servi sempre index.html
-    return send_from_directory(static_folder_path, 'index.html')
+    return send_from_directory(app.template_folder, 'index.html')
 
 
 # if __name__ == '__main__':
