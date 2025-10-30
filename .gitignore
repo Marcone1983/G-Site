@@ -1,0 +1,10 @@
+# Build output
+/build
+/dist
+
+# Dependencies
+/node_modules
+/pnpm-lock.yaml
+
+# Environment variables
+.env
