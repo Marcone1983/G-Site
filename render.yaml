@@ -2,7 +2,7 @@ services:
 - type: web
   name: g-site-backend
   env: python
-  buildCommand: "pip install -r requirements.txt"
+  buildCommand: "npm install && npm run build && pip install -r requirements.txt"
   startCommand: "gunicorn main:app"
   plan: free # Usa il piano gratuito per default
   # Render assegna automaticamente una porta, ma Gunicorn ascolta su 8000 per default.
