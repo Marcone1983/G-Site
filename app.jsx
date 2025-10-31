@@ -35,7 +35,11 @@ function App() {
 
     } catch (err) {
       console.error("Errore nell'analisi:", err);
-      setError("Impossibile recuperare i dati. Verifica che il dominio sia corretto.");
+      if (err.response && err.response.status === 503) {
+        setError(err.response.data.message);
+      } else {
+        setError("Impossibile recuperare i dati. Verifica che il dominio sia corretto.");
+      }
     } finally {
       setLoading(false);
     }
@@ -91,15 +95,19 @@ function App() {
               <MetricCard title="Durata Media Visita" value={formatDuration(data.visit_duration)} />
             </div>
 
-            <h3 className="text-xl font-semibold text-gray-700 mt-8 mb-4">Fonti di Traffico Principali</h3>
-            <div className="space-y-2">
-              {data.traffic_sources.map((source, index) => (
-                <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-                  <span className="font-medium text-gray-800">{source.channel}</span>
-                  <span className="text-lg font-bold text-blue-700">{source.value.toLocaleString()}</span>
+            {data.traffic_sources.length > 0 && (
+              <>
+                <h3 className="text-xl font-semibold text-gray-700 mt-8 mb-4">Fonti di Traffico Principali</h3>
+                <div className="space-y-2">
+                  {data.traffic_sources.map((source, index) => (
+                    <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
+                      <span className="font-medium text-gray-800">{source.channel}</span>
+                      <span className="text-lg font-bold text-blue-700">{source.value.toLocaleString()}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
 
             <p className="text-sm text-gray-500 mt-4">Dati forniti da: {data.data_source}</p>
           </div>
