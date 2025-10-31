@@ -1,10 +1,1 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './app.jsx';
-import './app.css'; // Importa il CSS per Tailwind
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+// File rimosso per bypassare la build di Vite e risolvere il problema della pagina bianca su GitHub Pages. Il codice JS è ora inline in index.html.
