@@ -8,14 +8,7 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [config, setConfig] = useState(null);
 
-  // 1. Carica la configurazione del backend (per controllare la chiave API)
-  useEffect(() => {
-    axios.get("/api/config")
-      .then(response => setConfig(response.data))
-      .catch(err => console.error("Errore nel caricamento della configurazione:", err));
-  }, []);
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
@@ -25,39 +18,24 @@ function App() {
     setError(null);
     setData(null);
 
-    // Esempio di query Plausible per ottenere il traffico totale
-    const plausibleQuery = {
-      site_id: domain, // Il dominio è l'ID del sito in Plausible
-      metrics: ["visitors", "pageviews", "bounce_rate", "visit_duration"],
-      date_range: "30d",
-      // Aggiungere altre query per i dati di dettaglio (es. fonti di traffico)
-      // Per il momento, ci concentriamo sulla metrica principale
-    };
-
     try {
-      // Chiamata all'endpoint proxy Flask
-      const response = await axios.post(`${API_BASE_URL}/proxy/plausible`, plausibleQuery, {
-        headers: {
-          // Plausible richiede il dominio nell'header Origin per la validazione
-          'Origin': window.location.origin
-        }
-      });
+      // Chiamata all'endpoint API fittizia
+      const response = await axios.post(`${API_BASE_URL}/analyze`, { domain });
       
-      // La risposta è un array di risultati, ne prendiamo il primo per le metriche aggregate
-      const result = response.data.results[0];
+      const result = response.data.metrics;
       setData({
-        domain: domain,
+        domain: response.data.domain,
         visitors: result.visitors.value,
         pageviews: result.pageviews.value,
         bounce_rate: result.bounce_rate.value,
         visit_duration: result.visit_duration.value,
-        data_source: "Plausible Analytics (via Proxy Flask)",
-        // Aggiungere qui altri dati come le serie temporali, se necessario
+        data_source: response.data.details.data_source,
+        traffic_sources: response.data.details.traffic_sources,
       });
 
     } catch (err) {
       console.error("Errore nell'analisi:", err);
-      setError("Impossibile recuperare i dati. Verifica che il dominio sia corretto e che la chiave API Plausible sia configurata correttamente sul server.");
+      setError("Impossibile recuperare i dati. Verifica che il dominio sia corretto.");
     } finally {
       setLoading(false);
     }
@@ -88,19 +66,12 @@ function App() {
           />
           <button
             type="submit"
-            disabled={loading || !config?.plausible_api_key_configured}
+            disabled={loading}
             className="p-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition duration-150"
           >
             {loading ? "Analizzando..." : "Analizza Traffico"}
           </button>
         </form>
-
-        {config && !config.plausible_api_key_configured && (
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-            <p className="font-bold">Attenzione: Chiave API Plausible non configurata!</p>
-            <p>L'analisi non funzionerà finché non imposti la variabile d'ambiente `PLAUSIBLE_API_KEY` sul server.</p>
-          </div>
-        )}
 
         {error && (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
@@ -118,6 +89,16 @@ function App() {
               <MetricCard title="Visualizzazioni Pagina" value={data.pageviews.toLocaleString()} />
               <MetricCard title="Frequenza di Rimbalzo" value={`${(data.bounce_rate * 100).toFixed(1)}%`} />
               <MetricCard title="Durata Media Visita" value={formatDuration(data.visit_duration)} />
+            </div>
+
+            <h3 className="text-xl font-semibold text-gray-700 mt-8 mb-4">Fonti di Traffico Principali</h3>
+            <div className="space-y-2">
+              {data.traffic_sources.map((source, index) => (
+                <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
+                  <span className="font-medium text-gray-800">{source.channel}</span>
+                  <span className="text-lg font-bold text-blue-700">{source.value.toLocaleString()}</span>
+                </div>
+              ))}
             </div>
 
             <p className="text-sm text-gray-500 mt-4">Dati forniti da: {data.data_source}</p>
