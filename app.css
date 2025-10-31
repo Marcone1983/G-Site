@@ -1,1 +1,3 @@
-/* File rimosso per bypassare la build di Vite e risolvere il problema della pagina bianca su GitHub Pages. Il CSS è ora inline in index.html. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
