@@ -228,7 +228,7 @@ def analyze_traffic():
         domain = domain.replace('http://', '').replace('https://', '').replace('www.', '').split('/')[0]
 
         # Simula un ritardo per lo scraping
-        time.sleep(random.uniform(3.0, 6.0))
+        # time.sleep(random.uniform(3.0, 6.0)) # Rimosso per prevenire timeout su Render
 
         core_data = get_core_public_data(domain)
         traffic_data = generate_40_metrics_v5(domain, core_data)
