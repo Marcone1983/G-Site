@@ -55,7 +55,7 @@ function App() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4">
       <header className="w-full max-w-4xl text-center py-6">
         <h1 className="text-4xl font-bold text-gray-800">Real Traffic Analyzer</h1>
-        <p className="text-gray-600 mt-2">Analisi del traffico web tramite API Open Source (Plausible)</p>
+        <p className="text-gray-600 mt-2">Analisi del traffico web tramite Algoritmo di Stima Open-Source (SimilarWeb-like)</p>
       </header>
 
       <main className="w-full max-w-4xl bg-white shadow-lg rounded-xl p-8">
